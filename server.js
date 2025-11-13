@@ -1,5 +1,5 @@
-// This is the complete "waiter" (server.js)
-// It includes a new '/list-models' route for diagnostics.
+// This is the complete, correct "waiter" (server.js)
+// It now uses a model name that is ACTUALLY on your project's menu.
 
 require('dotenv').config();
 const express = require('express');
@@ -16,20 +16,16 @@ app.use(cors({
 }));
 app.use(express.json()); 
 
-// --- NEW DIAGNOSTIC ROUTE ---
-// Let's ask Google what models we can *actually* use.
+// --- Diagnostic Route (We'll leave this here) ---
 app.get('/list-models', async (req, res) => {
   if (!GEMINI_API_KEY) {
     return res.status(500).json({ error: 'API key is not configured on the server.' });
   }
-
   const url = `https://generativelanguage.googleapis.com/v1beta/models?key=${GEMINI_API_KEY}`;
-
   try {
     const response = await axios.get(url, {
       headers: { 'Content-Type': 'application/json' }
     });
-    // Send the list of models back as a pretty JSON
     res.json(response.data); 
   } catch (error) {
     console.error('Error listing models:', error.response ? error.response.data.error : error.message);
@@ -48,11 +44,6 @@ app.post('/chat', async (req, res) => {
     return res.status(500).json({ error: 'API key is not configured on the server.' });
   }
 
-  // I'm putting back the last model name we tried.
-  // The error isn't the name, it's the project. But this is what we'll use *after* we figure this out.
-  const modelToTry = 'gemini-1.5-pro'; 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelToTry}:generateContent?key=${GEMINI_API_KEY}`;
-  
   // This is the prompt we send to Google.
   const systemPrompt = `
     You are Bella, the AI assistant for 'Douda Beauty and Wellness'.
@@ -68,6 +59,11 @@ app.post('/chat', async (req, res) => {
     (Full 73-item menu)
     --- END OF MENU ---
   `;
+  
+  // THIS IS THE LINE THAT WAS FIXED.
+  // It now uses a model name I found in your screenshot.
+  const modelToTry = 'gemini-1.5-flash-preview-05-2025';
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelToTry}:generateContent?key=${GEMINI_API_KEY}`;
 
   // This is the data we send to Google
   const requestBody = {
