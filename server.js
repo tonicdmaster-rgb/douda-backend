@@ -142,8 +142,8 @@ app.post('/chat', async (req, res) => {
   `;
   
   // THIS IS THE LINE THAT WAS FIXED.
-  // It now points to the correct, existing 'gemini-1.5-flash' model.
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+  // It now points to the 'gemini-1.0-pro' model.
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0-pro:generateContent?key=${GEMINI_API_KEY}`;
 
   // This is the data we send to Google
   const requestBody = {
