@@ -11,20 +11,13 @@ const PORT = process.env.PORT || 8000;
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 // --- Middleware ---
-
-// THIS IS THE FIX.
-// It now correctly uses 'https://douda-beauty-and-willness.web.app' (one 'l')
 app.use(cors({
-  origin: 'https://douda-beauty-and-willness.web.app'
+  origin: 'https://douda-beauty-and-willness.web.app' // Correct spelling (1 'l')
 }));
-
-// Allow the server to read JSON (like "userQuery")
 app.use(express.json()); 
 
 // --- The "Chat" Route ---
-// Your React app will send all chat messages here
 app.post('/chat', async (req, res) => {
-  // Get the user's question from the React app
   const { userQuery } = req.body;
 
   if (!userQuery) {
@@ -36,7 +29,6 @@ app.post('/chat', async (req, res) => {
   }
 
   // This is the prompt we send to Google.
-  // The system prompt is now hidden here, safe from the user.
   const systemPrompt = `
     You are Bella, the AI assistant for 'Douda Beauty and Wellness'.
     Your Goal: Be a helpful, friendly, and professional assistant.
@@ -142,8 +134,8 @@ app.post('/chat', async (req, res) => {
   `;
   
   // THIS IS THE LINE THAT WAS FIXED.
-  // It now points to the 'gemini-1.0-pro' model.
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0-pro:generateContent?key=${GEMINI_API_KEY}`;
+  // It now points to just 'gemini-pro'.
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`;
 
   // This is the data we send to Google
   const requestBody = {
@@ -162,7 +154,7 @@ app.post('/chat', async (req, res) => {
     res.json({ text: aiText });
 
   } catch (error) {
-    console.error('Error calling Gemini API:', error.response ? error.response.data : error.message);
+    console.error('Error calling Gemini API:', error.response ? error.response.data.error : error.message);
     res.status(500).json({ error: "I'm having trouble connecting to my brain. Please try again later." });
   }
 });
