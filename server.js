@@ -86,7 +86,7 @@ app.post('/chat', async (req, res) => {
     - Cellulite Massage: 40 min - $40
     
     **Makeup**
-    - Makeup without Lashes: $40 (45 min)
+    - Makeup without Lasshes: $40 (45 min)
     - Makeup with Lashes: $45 (60 min)
     - Eye Makeup w/ Lashes: $30 (30 min)
     - Lashes: $10 (15 min)
@@ -134,8 +134,8 @@ app.post('/chat', async (req, res) => {
   `;
   
   // THIS IS THE LINE THAT WAS FIXED.
-  // It now points to just 'gemini-pro'.
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`;
+  // It now points to the 'gemini-1.5-pro-latest' model.
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=${GEMINI_API_KEY}`;
 
   // This is the data we send to Google
   const requestBody = {
