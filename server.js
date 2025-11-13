@@ -141,8 +141,9 @@ app.post('/chat', async (req, res) => {
     --- END OF MENU ---
   `;
   
-  // This is the URL to the Google AI API
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
+  // THIS IS THE LINE THAT WAS FIXED.
+  // It now points to a model that actually exists.
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`;
 
   // This is the data we send to Google
   const requestBody = {
