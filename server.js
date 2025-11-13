@@ -12,7 +12,7 @@ const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 // --- Middleware ---
 // Allow your React app to talk to this server
-app.use(cors()); 
+app.use(cors({origin: 'https.douda-beauty-and-wellness.web.app'})); 
 // Allow the server to read JSON (like "userQuery")
 app.use(express.json()); 
 
