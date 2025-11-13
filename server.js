@@ -12,9 +12,17 @@ const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 // --- Middleware ---
 // Allow your React app to talk to this server
-app.use(cors()); 
-// Allow the server to read JSON (like "userQuery")
+// --- Middleware ---
+
+// Allow your specific app (with one 'l') to talk to this server
+app.use(cors({
+  origin: 'https.douda-beauty-and-willness.web.app'
+}));
+
+// Allow the server to read JSON
 app.use(express.json()); 
+
+// --- The "Chat" Route ---
 
 // --- The "Chat" Route ---
 // Your React app will send all chat messages here
