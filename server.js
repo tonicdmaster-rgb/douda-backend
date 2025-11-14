@@ -1,4 +1,5 @@
-// This is the final, ultimate server.js fix.
+// --- FINAL DIAGNOSTIC SERVER.JS ---
+// This version removes the large menu data to test if the prompt size is the issue.
 
 require('dotenv').config();
 const express = require('express');
@@ -27,44 +28,32 @@ app.post('/chat', async (req, res) => {
     return res.status(500).json({ error: 'API key is not configured on the server.' });
   }
 
-  // THIS IS THE FINAL MODEL NAME CHANGE.
-  // We're using the most current, stable model.
-  const modelToTry = 'gemini-2.5-flash'; 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelToTry}:generateContent?key=${GEMINI_API_KEY}`;
-  
-  // This is the prompt we send to Google.
+  // SIMPLIFIED SYSTEM PROMPT (TEST ONLY)
   const systemPrompt = `
-    You are Bella, the AI assistant for 'Douda Beauty and Wellness'.
-    Your Goal: Be a helpful, friendly, and professional assistant.
-    Tone: Friendly, stylish, professional, and welcoming.
-    Context & Rules:
-    1. You have access to the *complete* salon menu.
-    2. When asked about services or prices, answer by *directly referencing* the menu I provide below.
-    3. If a user asks "how much is...", find the service and state its price.
-    4. If a user asks "do you offer...", check the menu.
-    
-    --- MASTER SERVICE MENU ---
-    (Full 73-item menu)
-    --- END OF MENU ---
+    You are Bella, the AI assistant for Douda Beauty. 
+    Your goal is to be friendly and respond to general beauty questions. 
+    DO NOT mention the salon menu, as you do not have it right now.
   `;
 
-  // This is the data we send to Google
+  // We'll stick with the correct model name
+  const modelToTry = 'gemini-2.5-flash'; 
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelToTry}:generateContent?key=${GEMINI_API_KEY}`;
+
   const requestBody = {
     contents: [{ role: 'user', parts: [{ text: userQuery }] }],
     systemInstruction: { parts: [{ text: systemPrompt }] }
   };
 
   try {
-    // Make the call to Google
     const response = await axios.post(url, requestBody, {
       headers: { 'Content-Type': 'application/json' }
     });
 
-    // Send the AI's answer back to the React app
     const aiText = response.data.candidates[0].content.parts[0].text;
     res.json({ text: aiText });
 
   } catch (error) {
+    // If the server crashes here, the problem is 100% the Google Cloud project.
     console.error('Error calling Gemini API:', error.response ? error.response.data.error : error.message);
     res.status(500).json({ error: "I'm having trouble connecting to my brain. Please try again later." });
   }
