@@ -1,5 +1,4 @@
-// --- FINAL AUTHORITY SERVER.JS ---
-// This file is built to override the AI's polite refusal.
+// --- FINAL, PRODUCTION-READY BACKEND SERVER.JS ---
 
 require('dotenv').config();
 const express = require('express');
@@ -10,15 +9,17 @@ const app = express();
 const PORT = process.env.PORT || 8000;
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
-// --- Middleware (This is all correct) ---
+// --- Middleware ---
+// CORS FIX: Allows your frontend to talk to this backend
 app.use(cors({
-  origin: 'https://douda-beauty-and-willness.web.app'
+  origin: 'https://douda-beauty-and-willness.web.app' 
 }));
 app.use(express.json()); 
 
 // --- The "Chat" Route ---
 app.post('/chat', async (req, res) => {
   const { userQuery } = req.body;
+
   if (!userQuery) {
     return res.status(400).json({ error: 'userQuery is required' });
   }
@@ -26,7 +27,11 @@ app.post('/chat', async (req, res) => {
     return res.status(500).json({ error: 'API key is not configured on the server.' });
   }
 
-  // --- NEW, MANDATORY SYSTEM PROMPT ---
+  // Set the correct, stable model. (Fastest available is 2.5 Flash)
+  const modelToTry = 'gemini-2.5-flash'; 
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelToTry}:generateContent?key=${GEMINI_API_KEY}`;
+
+  // --- Final System Prompt: Strict and Authoritative ---
   const systemPrompt = `
     You are Bella, the **FINAL AUTHORITY** on Douda Beauty & Wellness pricing and services.
     
@@ -34,8 +39,8 @@ app.post('/chat', async (req, res) => {
     
     CRITICAL RULE:
     1. YOU MUST **DIRECTLY QUOTE** the price and duration from the provided menu list for any service requested.
-    2. YOU MUST **NEVER** refuse to answer a price question.
-    3. YOU MUST **NEVER** suggest contacting the team or visiting the salon for pricing details.
+    2. YOU MUST **NEVER** refuse to answer a price question or suggest contacting the team.
+    3. Answer all other questions in a friendly, helpful manner.
     
     --- MASTER SERVICE MENU ---
     **Nails**
@@ -50,6 +55,7 @@ app.post('/chat', async (req, res) => {
     - Add French/Ombre: $1 (10 min)
     - Manicure & Pedicure & Parafine: $30 (90 min)
     - Gel Polish with Protection: $17 (45 min)
+    - Gel Polish Pedicure: $15 (45 min)
     - Full Set Gel + Gel Polish: $40 (75 min)
     - Gel-X + Gel Polish: $27 (60 min)
     - Refill Gel + Gel Polish: $22 (60 min)
@@ -129,9 +135,6 @@ app.post('/chat', async (req, res) => {
     - Full Lips Tattoo: $120 (120 min)
     --- END OF MENU ---
   `;
-  
-  const modelToTry = 'gemini-2.5-flash'; // Correct, stable model
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelToTry}:generateContent?key=${GEMINI_API_KEY}`;
 
   const requestBody = {
     contents: [{ role: 'user', parts: [{ text: userQuery }] }],
